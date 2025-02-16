@@ -10,7 +10,8 @@ cards = open('./cards.txt', 'r+')
 cards.write("")
 
 bot = telebot.TeleBot(TOKEN)
-texts = [["first", 1000, 0]]
+# texts = [["first", 1000, 0]]
+texts=[]
 users = {}
 cooldown = 1800
 
@@ -27,7 +28,7 @@ def versus(message):
             userstats[1].append(reward[2])
         userstats[0] += reward[1]
         userstats[2] = cooldown
-        bot.reply_to(message, f"Вы нашли карточку! \n{reward[0]}\nи получили {reward[1]} очков!")
+        bot.send_photo(message.chat.id, open(f"./pictures/{reward[2]}","rb"), f"Вы нашли карточку! \n{reward[0]}\nи получили {reward[1]} очков!")
     else:
         bot.reply_to(message, f"А вот и нет, вонючий спамер! Жди еще {userstats[2]} секунд!")
 
@@ -40,19 +41,6 @@ def sigmabosinnchik(message):
         bot.reply_to(message, f"Вы пользователь {name}\n у вас {len(userstats[1])}/{len(texts)} карточек!\n {userstats[0]} очков!")
     except:
         bot.reply_to(message, "похоже вас нет в базе :(")
-
-@bot.message_handler(func=lambda message: "/++" in message.text.lower())
-def plus(message):
-    if message.from_user.username in ["Dan_molnia", "cvetocheckcactus"]:
-        try:
-            text = message.text.split(" ")
-            texts.append([" ".join(text[1:-1]), int(text[-1]), len(texts) - 1])
-            bot.reply_to(message, f"успешно добавлено! айди: {len(texts) - 1}")
-        except:
-            bot.reply_to(message, "неправильный формат")
-    else:
-        print(message.from_user.username)
-        bot.reply_to(message, "Добавление только через @dan_molnia или @cvetocheсkcactus !")
 
 @bot.message_handler(func=lambda message: "/reload" in message.text.lower())
 def reload(message):
@@ -72,7 +60,7 @@ def reload(message):
         card_list = [str(card) for card in users[i][1]]
         file.write(f'{i} {users[i][0]} {",".join(card_list)}\n')
 
-    cardsgot = cards
+    cardsgot = cards.read().splitlines()
     for i in cardsgot:
         a = i.split(" ")
         if not i in texts:
@@ -85,11 +73,31 @@ def reload(message):
     cards.write(curstring)
     cards.close()
     file.close()
-    bot.reply_to(message, "Я обновил базу данных!")
+    if hasattr(message,"id"):
+        bot.reply_to(message, "Я обновил базу данных!")
+
+@bot.message_handler(content_types=['photo'])
+def handle_photo(message):
+    if "/++" in message.caption:
+        if message.from_user.username in ["Dan_molnia", "cvetocheckcactus"]:
+            try:
+                cphoto=bot.download_file(bot.get_file(message.photo[-1].file_id).file_path)
+                with open(f"./pictures/{len(texts)}","wb") as new_file:
+                    new_file.write(cphoto)
+                text = message.caption.split(" ")
+                texts.append([" ".join(text[1:-1]), int(text[-1]), len(texts)]) #тут может быть ошибка
+                bot.reply_to(message, f"успешно добавлено! айди: {len(texts)}")
+
+            except:
+                bot.reply_to(message, "неправильный формат")
+        else:
+            print(message.from_user.username)
+            bot.reply_to(message, "Добавление только через @dan_molnia или @cvetocheсkcactus !")
 
 
 def loop():
     global users
+    reload("ddd")
     while True:
         for i in list(users.keys()):
             if users[i][2] > 0:
