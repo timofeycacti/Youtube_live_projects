@@ -1,0 +1,64 @@
+<head>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+      background-color: rgb(255, 255, 255);
+      transition: background-color 0.5s;
+      color: black;
+    }
+    
+    .square1{
+      left:0px;
+      top:0px;
+      background-color: lightgray;
+      border: 5px black solid;
+      width: 100px;
+      height: 50px;
+      align-content: center;
+      text-align: center;
+      color: black;
+    }
+
+    .square1:hover{
+      animation: onhover forwards 5s;
+    }
+    .square1:active{
+      border: 10px;
+      animation: onpress 0.1s forwards;
+    }
+
+    @keyframes onhover{
+      0%{background-color: lightgray;}
+      100%{background-color:lightcyan;}
+    }
+    @keyframes onpress{
+      0%{transform: rotate(0deg);}
+      25%{transform: rotate(-5deg);}
+      50%{transform: rotate(5deg);}
+      100%{transform: rotate(0deg);}
+    }
+  </style>
+</head>
+<body>
+  <div id = "themebutton" class="square1" onpointerdown="
+  let bg=document.body;
+  let me=document.getElementById('themebutton')
+  if (bg.style.backgroundColor=='black') {
+    bg.style.backgroundColor='white'
+    bg.style.color='black'
+    me.style.borderColor='black'
+  }
+  else {
+    bg.style.backgroundColor='black'
+    bg.style.color='white'
+    me.style.borderColor='white'
+  }
+  "><b>Change Theme</b></div>
+
+</body>
+<!-- smooth transition by cvetocheckcactus -->
