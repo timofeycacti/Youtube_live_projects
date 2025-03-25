@@ -1,0 +1,25 @@
+import pyautogui
+from pynput import keyboard
+from PIL import Image
+import time
+
+img=Image.open("./imgforgrtic.png","r")
+
+pyautogui.PAUSE = 0
+distance=4
+#725.0 572.0
+#485.0 420.0
+
+def on_press(key):
+    if str(key)=="Key.tab":
+        for x in range(img.width):
+            for y in range(img.height):
+                curcolor=img.getpixel((x,y))
+                if curcolor not in [(255,255,255),(255,255,255),0]:
+                    pyautogui.leftClick()
+                    print(x,y,img.getpixel((x,y)))
+                pyautogui.move(0,distance)
+            pyautogui.move(distance,-img.height*distance)
+
+with keyboard.Listener(on_press=on_press) as listener:
+    listener.join()
